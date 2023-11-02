@@ -18,6 +18,7 @@ using namespace cv;
 #include "video.h"
 #include "capturarvideo.h"
 #include "ajustelineal.h"
+#include "bajorrelieve.h"
 
 QString FiltroImagen = "Todos los formatos (*.jpg *.jpeg *.jpe .jp2 *.tif *.tiff *.png *.gif *.bmp *.dib *.webp *.ppm);;Archivos JPG (*.jpg *.jpeg *.jpe);;Archivos TIF (*.tif *.tiff);;Archivos PNG (*.png);;Archivos GIF (*.gif);;Archivos BMP (*.bmp *.dib);;Otros (*.*)";
 
@@ -402,5 +403,13 @@ void MainWindow::on_actionAjuste_lineal_del_histograma_triggered()
     if (foto_activa() != -1){
         ajustelineal al (foto_activa());
         al.exec();
+    }
+}
+
+void MainWindow::on_actionBajorrelieve_triggered()
+{
+    if(foto_activa()!=-1 && primera_libre() != -1){
+        Bajorrelieve br(foto_activa(), primera_libre());
+        br.exec();
     }
 }

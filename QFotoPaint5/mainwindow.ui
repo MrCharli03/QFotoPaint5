@@ -388,7 +388,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>544</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuArchivo">
@@ -474,6 +474,7 @@ p, li { white-space: pre-wrap; }
      <addaction name="actionMediana"/>
     </widget>
     <addaction name="menuSuavizado"/>
+    <addaction name="actionBajorrelieve"/>
    </widget>
    <widget class="QMenu" name="menuV_deo">
     <property name="title">
@@ -694,6 +695,11 @@ p, li { white-space: pre-wrap; }
   <action name="actionAjuste_lineal_del_histograma">
    <property name="text">
     <string>Ajuste lineal del histograma...</string>
+   </property>
+  </action>
+  <action name="actionBajorrelieve">
+   <property name="text">
+    <string>Bajorrelieve...</string>
    </property>
   </action>
  </widget>

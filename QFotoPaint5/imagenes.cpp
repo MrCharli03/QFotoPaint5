@@ -643,6 +643,42 @@ void ver_brillo_contraste_gama (int nfoto, double suma, double prod,
 
 //---------------------------------------------------------------------------
 
+void ver_bajorrelieve (int nfoto, int nres, double angulo,
+                       double grado, int nfondo, bool guardar)
+{
+    QString fondos[4]= {":/imagenes/arena.jpg",
+                       ":/imagenes/cielo.jpg",
+                       ":/imagenes/gris.png",
+                       ":/imagenes/madera.jpg"};
+    QImage qimq= QImage(fondos[nfondo]);
+    Mat imgres(qimq.height(),qimq.width(),
+               CV_8UC4,qimq.scanLine(0));
+    cvtColor(imgres, imgres, COLOR_RGBA2RGB);
+    resize(imgres, imgres, foto[nfoto].img.size());
+
+    Mat gris;
+    cvtColor(foto[nfoto].img, gris, COLOR_BGR2GRAY);
+    Mat sobel;
+    Mat rotada;
+    rotar_angulo(gris, rotada, angulo, 1.0, 1);
+    Sobel(rotada, sobel, CV_8U, 1, 0, 3, grado, 128, BORDER_REFLECT);
+    rotar_angulo(sobel, rotada, -angulo, 1.0, 0);
+    imshow("Sobel", rotada);
+    Rect roi((rotada.cols-foto[nfoto].img.cols)/2,
+             (rotada.rows-foto[nfoto].img.rows)/2,
+             foto[nfoto].img.cols, foto[nfoto].img.rows);
+    gris = rotada(roi);
+    cvtColor(gris, gris, COLOR_GRAY2BGR);
+    addWeighted(gris, 1, imgres, 1, -128, imgres);
+    if(guardar)
+        crear_nueva(nres, imgres);
+    else
+        imshow("Bajorrelieve", imgres);
+
+}
+
+//---------------------------------------------------------------------------
+
 void ver_ajuste_lineal(int nfoto, double pmin, double pmax, bool guardar){
 
     Mat grises;

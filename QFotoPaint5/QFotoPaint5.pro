@@ -16,6 +16,7 @@ CONFIG += c++11
 
 SOURCES += main.cpp\
     ajustelineal.cpp \
+    bajorrelieve.cpp \
     capturarvideo.cpp \
     mainwindow.cpp \
     imagenes.cpp \
@@ -30,6 +31,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     ajustelineal.h \
+    bajorrelieve.h \
     capturarvideo.h \
     imagenes.h \
     dialognueva.h \
@@ -43,6 +45,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     ajustelineal.ui \
+    bajorrelieve.ui \
     capturarvideo.ui \
     dialognueva.ui \
     brillocontraste.ui \

@@ -72,6 +72,7 @@ private slots:
     void on_toolButton_9_clicked();
     void on_actionArcoiris_triggered();
     void on_actionAjuste_lineal_del_histograma_triggered();
+    void on_actionBajorrelieve_triggered();
 };
 
 extern MainWindow *w;
