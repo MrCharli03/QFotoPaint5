@@ -18,5 +18,6 @@
         <file>imagenes/cielo.jpg</file>
         <file>imagenes/gris.png</file>
         <file>imagenes/madera.jpg</file>
+        <file>imagenes/arco-iris.png</file>
     </qresource>
 </RCC>

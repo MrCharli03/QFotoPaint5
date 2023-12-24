@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QMessageBox>
+#include <QClipboard>
+#include <QMimeData>
 
 #include <opencv2/opencv.hpp>
 using namespace cv;
@@ -19,6 +21,11 @@ using namespace cv;
 #include "capturarvideo.h"
 #include "ajustelineal.h"
 #include "bajorrelieve.h"
+#include "pinchar_estirar.h"
+#include "mat_sat_lum.h"
+#include "convolucion.h"
+#include "perspectiva.h"
+#include "copiar_video_ui.h"
 
 QString FiltroImagen = "Todos los formatos (*.jpg *.jpeg *.jpe .jp2 *.tif *.tiff *.png *.gif *.bmp *.dib *.webp *.ppm);;Archivos JPG (*.jpg *.jpeg *.jpe);;Archivos TIF (*.tif *.tiff);;Archivos PNG (*.png);;Archivos GIF (*.gif);;Archivos BMP (*.bmp *.dib);;Otros (*.*)";
 
@@ -413,3 +420,147 @@ void MainWindow::on_actionBajorrelieve_triggered()
         br.exec();
     }
 }
+
+void MainWindow::on_actionEscala_de_color_triggered()
+{
+    if(foto_activa()!=-1 && primera_libre()!= -1)
+        escala_color(foto_activa(), primera_libre());
+}
+
+void MainWindow::on_actionPinchar_estirar_triggered()
+{
+    if(foto_activa()!=-1){
+        pinchar_estirar pe(foto_activa());
+        pe.exec();
+    }
+}
+
+void MainWindow::on_actionMatiz_saturaci_n_luminosidad_triggered()
+{
+    if(foto_activa() != -1){
+        mat_sat_lum msl(foto_activa());
+        msl.exec();
+    }
+
+}
+
+void MainWindow::on_actionConvoluci_n_triggered()
+{
+    if(foto_activa() != -1 && primera_libre() != -1){
+        convolucion co(foto_activa(), primera_libre());
+        co.exec();
+    }
+}
+
+void MainWindow::on_actionPerspectiva_triggered()
+{
+    if(foto_activa()!=-1){
+        Perspectiva pe;
+        pe.exec();
+    }
+}
+
+void MainWindow::on_actionCopiar_con_efectos_triggered()
+{
+    copiar_video_ui copiarv;
+    copiarv.exec();
+}
+
+void MainWindow::on_toolButton_10_clicked()
+{
+     herr_actual= HER_TRAZO;
+}
+
+void MainWindow::on_actionTrazo_triggered()
+{
+    herr_actual= HER_TRAZO;
+    ui->toolButton_10->setChecked(true);
+}
+
+void MainWindow::on_actionInformacion_foto_triggered() {
+    int fa = foto_activa();
+    if (fa != -1) {
+        Mat imagen = foto[fa].img; // Acceder a la imagen activa
+
+        // Obtener información sobre la imagen
+        int width = imagen.cols;
+        int height = imagen.rows;
+        int depth = imagen.depth();
+        int channels = imagen.channels();
+        size_t memory = imagen.total() * imagen.elemSize(); // Memoria ocupada
+
+        Scalar promedioColor = mean(imagen); // Color medio de la imagen
+
+        // Traducción de la profundidad
+        QString profundidad;
+        switch (depth) {
+            case CV_8U:
+                profundidad = "8-bit unsigned";
+                break;
+            case CV_8S:
+                profundidad = "8-bit signed";
+                break;
+            case CV_16U:
+                profundidad = "16-bit unsigned";
+                break;
+            case CV_16S:
+                profundidad = "16-bit signed";
+                break;
+            case CV_32S:
+                profundidad = "32-bit signed";
+                break;
+            case CV_32F:
+                profundidad = "32-bit float";
+                break;
+            case CV_64F:
+                profundidad = "64-bit float";
+                break;
+            default:
+                profundidad = "Desconocida";
+        }
+
+        // Mostrar la información en una ventana de mensaje
+        QString info = "Tamaño: " + QString::number(width) + "x" + QString::number(height) + "\n";
+        info += "Profundidad: " + profundidad + "\n";
+        info += "Número de canales: " + QString::number(channels) + "\n";
+        info += "Memoria ocupada: " + QString::number(memory) + " bytes\n";
+        info += "Color medio (BGR): (" + QString::number(promedioColor[2]) + ", " +
+                                        QString::number(promedioColor[1]) + ", " +
+                                        QString::number(promedioColor[0]) + ")\n";
+
+        QMessageBox::information(this, "Información de la imagen", info);
+    }
+}
+
+void MainWindow::on_actionAbrir_portapapeles_triggered()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    if (mimeData->hasImage()) {
+        QImage image = qvariant_cast<QImage>(mimeData->imageData());
+
+        // Convertir QImage a matriz OpenCV (Mat)
+        Mat cvImage;
+        if (!image.isNull()) {
+                cvImage = Mat(image.height(), image.width(), CV_8UC4, const_cast<uchar*>(image.constBits()), image.bytesPerLine());
+                cvtColor( cvImage,  cvImage, COLOR_RGBA2BGR);
+        }
+
+        // Continuar con la lógica para manipular la imagen en tu aplicación
+        // Por ejemplo, puedes abrir una ventana de edición con esta imagen
+        int pl = comprobar_primera_libre();
+        if (pl != -1) {
+            // Usa la matriz cvImage para crear una nueva ventana de edición
+            // o realizar cualquier manipulación que desees en tu aplicación
+            crear_nueva(pl, cvImage);
+        }
+    } else {
+        QMessageBox::warning(this, "Portapapeles vacío",
+                             "No se encontró ninguna imagen en el portapapeles.");
+    }
+}
+
+
+
+

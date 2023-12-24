@@ -73,6 +73,16 @@ private slots:
     void on_actionArcoiris_triggered();
     void on_actionAjuste_lineal_del_histograma_triggered();
     void on_actionBajorrelieve_triggered();
+    void on_actionEscala_de_color_triggered();
+    void on_actionPinchar_estirar_triggered();
+    void on_actionMatiz_saturaci_n_luminosidad_triggered();
+    void on_actionConvoluci_n_triggered();
+    void on_actionPerspectiva_triggered();
+    void on_actionCopiar_con_efectos_triggered();
+    void on_toolButton_10_clicked();
+    void on_actionTrazo_triggered();
+    void on_actionInformacion_foto_triggered();
+    void on_actionAbrir_portapapeles_triggered();
 };
 
 extern MainWindow *w;

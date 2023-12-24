@@ -367,12 +367,35 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>330</x>
       <y>0</y>
-      <width>41</width>
+      <width>51</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>Arcoiris</string>
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="recursos.qrc">
+      <normaloff>:/imagenes/arco-iris.png</normaloff>:/imagenes/arco-iris.png</iconset>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="autoExclusive">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_10">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>0</y>
+      <width>51</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Trazo</string>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -388,7 +411,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>544</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuArchivo">
@@ -397,6 +420,7 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionNueva_imagen"/>
     <addaction name="actionAbrir_imagen"/>
+    <addaction name="actionAbrir_portapapeles"/>
     <addaction name="actionCapturar_de_c_mara"/>
     <addaction name="actionCapturar_de_video"/>
     <addaction name="separator"/>
@@ -431,6 +455,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="menuOpciones"/>
     <addaction name="menuHistograma"/>
     <addaction name="actionCrear_nueva"/>
+    <addaction name="actionInformacion_foto"/>
    </widget>
    <widget class="QMenu" name="menuHerramientas">
     <property name="title">
@@ -441,6 +466,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionArcoiris"/>
     <addaction name="actionRectangulo"/>
     <addaction name="actionElipse"/>
+    <addaction name="actionTrazo"/>
     <addaction name="actionSeleccionar"/>
    </widget>
    <widget class="QMenu" name="menuTransformar">
@@ -456,10 +482,13 @@ p, li { white-space: pre-wrap; }
      <addaction name="actionRotar_91"/>
     </widget>
     <addaction name="actionBrillo_contraste"/>
+    <addaction name="actionMatiz_saturaci_n_luminosidad"/>
     <addaction name="actionInvertir"/>
     <addaction name="menuRotar"/>
     <addaction name="actionMedia_ponderada"/>
     <addaction name="actionAjuste_lineal_del_histograma"/>
+    <addaction name="actionEscala_de_color"/>
+    <addaction name="actionPerspectiva"/>
    </widget>
    <widget class="QMenu" name="menuEfectos">
     <property name="title">
@@ -475,6 +504,8 @@ p, li { white-space: pre-wrap; }
     </widget>
     <addaction name="menuSuavizado"/>
     <addaction name="actionBajorrelieve"/>
+    <addaction name="actionPinchar_estirar"/>
+    <addaction name="actionConvoluci_n"/>
    </widget>
    <widget class="QMenu" name="menuV_deo">
     <property name="title">
@@ -492,9 +523,15 @@ p, li { white-space: pre-wrap; }
      </property>
      <addaction name="actionImagen_media"/>
     </widget>
+    <widget class="QMenu" name="menuV_deo_a_video">
+     <property name="title">
+      <string>Vídeo a video</string>
+     </property>
+     <addaction name="actionCopiar_con_efectos"/>
+    </widget>
     <addaction name="menuImagen_a_v_deo"/>
     <addaction name="menuV_deo_a_imagen"/>
-    <addaction name="actionV_deo_a_video"/>
+    <addaction name="menuV_deo_a_video"/>
    </widget>
    <widget class="QMenu" name="menuAyuda">
     <property name="title">
@@ -617,11 +654,6 @@ p, li { white-space: pre-wrap; }
     <string>Media...</string>
    </property>
   </action>
-  <action name="actionV_deo_a_video">
-   <property name="text">
-    <string>Vídeo a video</string>
-   </property>
-  </action>
   <action name="actionRotar_imagen">
    <property name="text">
     <string>Rotar imagen...</string>
@@ -700,6 +732,51 @@ p, li { white-space: pre-wrap; }
   <action name="actionBajorrelieve">
    <property name="text">
     <string>Bajorrelieve...</string>
+   </property>
+  </action>
+  <action name="actionEscala_de_color">
+   <property name="text">
+    <string>Escala de color</string>
+   </property>
+  </action>
+  <action name="actionPinchar_estirar">
+   <property name="text">
+    <string>Pinchar/estirar...</string>
+   </property>
+  </action>
+  <action name="actionMatiz_saturaci_n_luminosidad">
+   <property name="text">
+    <string>Matiz/saturación/luminosidad...</string>
+   </property>
+  </action>
+  <action name="actionConvoluci_n">
+   <property name="text">
+    <string>Convolución...</string>
+   </property>
+  </action>
+  <action name="actionPerspectiva">
+   <property name="text">
+    <string>Perspectiva...</string>
+   </property>
+  </action>
+  <action name="actionCopiar_con_efectos">
+   <property name="text">
+    <string>Copiar con efectos</string>
+   </property>
+  </action>
+  <action name="actionTrazo">
+   <property name="text">
+    <string>Trazo</string>
+   </property>
+  </action>
+  <action name="actionInformacion_foto">
+   <property name="text">
+    <string>Informacion foto</string>
+   </property>
+  </action>
+  <action name="actionAbrir_portapapeles">
+   <property name="text">
+    <string>Abrir portapapeles</string>
    </property>
   </action>
  </widget>

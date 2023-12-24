@@ -41,7 +41,7 @@ struct ventana {
 //    que se pueden usar. Añadir nuevas aquí
 
 enum tipo_herramienta {HER_PUNTO, HER_LINEA, HER_SELECCION,
-                       HER_RECTANGULO, HER_ELIPSE, HER_ARCO_IRIS};
+                       HER_RECTANGULO, HER_ELIPSE, HER_ARCO_IRIS, HER_TRAZO};
 
 
 ///////////////////////////////////////////////////////////////////
@@ -160,6 +160,34 @@ void ver_histograma (int nfoto, int canal, int nres);
 //y almacena el resultado en nres
 
 void ver_bajorrelieve (int nfoto, int nres, double angulo, double grado, int nfondo, bool guardar=false);
+
+Mat matsatlum(Mat img,  double sat, double lum,
+              int matiz);
+
+void ver_mat_sat_lum (int nfoto, double sat, double lum,
+                      int matiz, bool guardar= false);
+//Aplica la transformación de matiz/saturación/luminosidad
+
+void ver_convolucion (int nfoto, int nres, Mat M,
+                      double mult, double suma, bool guardar= false);
+//Transformación de convolución
+
+void ver_perspectiva(int nfoto1, int nfoto2,
+                     Point2f pt1[], Point2f pt2[],
+                     bool guardar= false);
+//Tranformación perspectiva
+
+void escala_color(int nfoto, int nres);
+//Transformacion de escala de color con el color_pincel
+
+Mat op_pinchar_estirar(Mat img, int cx, int cy,
+                         double radio, double grado);
+
+void ver_pinchar_estirar(int nfoto, int cx, int cy,
+                         double radio, double grado,
+                         bool guardar = false);
+
+//Transformacion de pinchar/estirar
 
 void media_ponderada (int nf1, int nf2, int nueva, double peso);
 // Calcula la media ponderada entre la imagen nf1 y la nf2, según el peso dado,

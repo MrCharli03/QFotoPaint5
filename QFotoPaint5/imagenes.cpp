@@ -251,7 +251,6 @@ void cb_close (int factual)
 }
 
 //---------------------------------------------------------------------------
-
 void cb_punto (int factual, int x, int y)
 {
     Mat im= foto[factual].img;  // Ojo: esto no es una copia, sino a la misma imagen
@@ -289,6 +288,58 @@ void cb_punto (int factual, int x, int y)
     }
     imshow(foto[factual].nombre, im);
     foto[factual].modificada= true;
+}
+
+void cb_trazo(int factual, int x, int y)
+{
+    Mat im = foto[factual].img;  // Ojo: esto no es una copia, sino a la misma imagen
+    if (difum_pincel == 0)
+    {
+        circle(im, Point(x, y), radio_pincel, color_pincel, -1, LINE_AA);
+    }
+    else
+    {
+        int tam = radio_pincel + difum_pincel;
+        Rect roi(x - tam, y - tam, 2 * tam + 1, 2 * tam + 1);
+        int posx = tam, posy = tam;
+        if (roi.x < 0)
+        {
+            roi.width += roi.x;
+            posx += roi.x;
+            roi.x = 0;
+        }
+        if (roi.y < 0)
+        {
+            roi.height += roi.y;
+            posy += roi.y;
+            roi.y = 0;
+        }
+        if (roi.x + roi.width > im.cols)
+        {
+            roi.width = im.cols - roi.x;
+        }
+        if (roi.y + roi.height > im.rows)
+        {
+            roi.height = im.rows - roi.y;
+        }
+        Mat trozo = im(roi);
+        Mat res(trozo.size(), im.type(), color_pincel);
+        Mat cop(trozo.size(), im.type(), CV_RGB(0, 0, 0));
+        circle(cop, Point(posx, posy), radio_pincel, CV_RGB(255, 255, 255), -1, LINE_AA);
+        blur(cop, cop, Size(difum_pincel * 2 + 1, difum_pincel * 2 + 1));
+        multiply(res, cop, res, 1.0 / 255.0);
+        bitwise_not(cop, cop);
+        multiply(trozo, cop, trozo, 1.0 / 255.0);
+        trozo = res + trozo;
+    }
+
+    // Dibujar líneas entre puntos consecutivos
+    static Point anterior= Point(x, y);
+    line(im, anterior, Point(x, y), color_pincel, radio_pincel * 2, LINE_AA);
+    anterior = Point(x, y);
+
+    imshow(foto[factual].nombre, im);
+    foto[factual].modificada = true;
 }
 
 //---------------------------------------------------------------------------
@@ -557,6 +608,13 @@ void callback (int event, int x, int y, int flags, void *_nfoto)
         else if (event==EVENT_MOUSEMOVE)
             cb_ver_seleccion(factual, x, y, flags!=EVENT_FLAG_LBUTTON);
         break;
+        // 2.6. Herramienta TRAZO
+    case HER_TRAZO:
+        if (flags==EVENT_FLAG_LBUTTON)
+            cb_trazo(factual, x, y);
+        else
+            ninguna_accion(factual, x, y);
+        break;
     }
 
     escribir_barra_estado();
@@ -572,6 +630,78 @@ void invertir (int nfoto, int nres)
     Mat img(foto[nfoto].img.size(), foto[nfoto].img.type());
     bitwise_not(foto[nfoto].img, img);
     crear_nueva(nres, img);
+}
+
+
+Mat matsatlum(Mat img, double sat, double lum, int matiz){
+    Mat hls;
+    cvtColor(img, hls, COLOR_BGR2HLS_FULL);
+    Mat canales[3];
+    split(hls, canales);
+    Mat im16;
+    canales[0].convertTo(im16, CV_16S, 1, matiz);
+    bitwise_and(im16, Scalar(255), im16);
+    im16.convertTo(canales[0], CV_8U);
+    canales[1]*=lum;
+    canales[2]*=sat;
+    merge(canales, 3, hls);
+    Mat res;
+    cvtColor(hls, res, COLOR_HLS2BGR_FULL);
+    return res;
+}
+//---------------------------------------------------------------------------
+void ver_mat_sat_lum (int nfoto, double sat, double lum,
+                      int matiz, bool guardar){
+
+    Mat imgres= matsatlum(foto[nfoto].img, sat, lum, matiz);
+
+    if(guardar){
+        imgres.copyTo(foto[nfoto].img);
+        foto[nfoto].modificada= true;
+    }
+    else imshow(foto[nfoto].nombre, imgres);
+}
+
+//---------------------------------------------------------------------------
+
+void ver_convolucion (int nfoto, int nres, Mat M,
+                      double mult, double suma, bool guardar)
+{
+    Mat res;
+    M*= mult;
+    filter2D(foto[nfoto].img, res, -1, M, Point(-1,-1), suma,
+             BORDER_REFLECT);
+    if(guardar)
+        crear_nueva(nres, res);
+    else {
+        imshow("Convolución", res);
+    }
+}
+
+//---------------------------------------------------------------------------
+
+void ver_perspectiva(int nfoto1, int nfoto2,
+                     Point2f pt1[], Point2f pt2[],
+                     bool guardar)
+{
+    Mat M;
+    M = getPerspectiveTransform(pt1, pt2);
+    Mat res= foto[nfoto2].img.clone();
+    warpPerspective(foto[nfoto1].img, res,
+                    M, res.size(), INTER_LINEAR,
+                    BORDER_TRANSPARENT);
+    if(guardar){
+        res.copyTo(foto[nfoto2].img);
+        foto[nfoto2].modificada= true;   }
+    else{
+        for(int i =0 ; i<4; i++){
+            line(res, pt2[i], pt2[(i+1)%4], CV_RGB(0,0,0), 2);
+        }
+        for(int i= 0; i<4; i++){
+            circle(res, pt2[i], 10, CV_RGB(255,0,0), -1);
+        }
+        imshow("Perspectiva", res);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -678,6 +808,69 @@ void ver_bajorrelieve (int nfoto, int nres, double angulo,
 }
 
 //---------------------------------------------------------------------------
+
+void escala_color(int nfoto, int nres){
+
+    Mat gris;
+    cvtColor(foto[nfoto].img, gris, COLOR_BGR2GRAY);
+    cvtColor(gris, gris, COLOR_GRAY2BGR);
+    Mat lut(256, 1, CV_8UC3);
+    int vr = color_pincel.val[2];
+    int vg = color_pincel.val[1];
+    int vb = color_pincel.val[0];
+    int vgris= (vr+vg+vb)/3;
+    for(int A=0; A<256; A++){
+        if(A<vgris)
+            lut.at<Vec3b>(A)= Vec3b(vb*A/vgris, vg*A/vgris, vr*A/vgris);
+        else {
+            lut.at<Vec3b>(A)= Vec3b(vb+(255-vb)*(A-vgris)/(256-vgris),
+                                     vg+(255-vg)*(A-vgris)/(256-vgris),
+                                     vr+(255-vr)*(A-vgris)/(256-vgris));
+        }
+    }
+    Mat res;
+    LUT(gris, lut, res);
+    crear_nueva(nres, res);
+}
+
+//---------------------------------------------------------------------------
+
+Mat op_pinchar_estirar(Mat img, int cx, int cy,
+                    double radio, double grado){
+    Mat S(img.rows, img.cols, CV_32FC1);
+    for(int y=0; y<S.rows; y++)
+        for(int x=0; x<S.cols; x++)
+            S.at<float>(y,x)=exp(-((x-cx)*(x-cx)+(y-cy)*(y-cy))/(radio*radio));
+    Mat Gx, Gy;
+    Sobel(S, Gx, CV_32F, 1, 0, 3, grado);
+    Sobel(S, Gy, CV_32F, 0, 1, 3, grado);
+    multiply(S, Gx, Gx);
+    multiply(S, Gy, Gy);
+    for(int y=0; y<S.rows; y++)
+        for(int x=0; x<S.cols; x++){
+            Gx.at<float>(y,x)+=x;
+            Gy.at<float>(y,x)+=y;
+        }
+    Mat res;
+    remap(img, res, Gx, Gy, INTER_CUBIC, BORDER_REFLECT);
+    return res;
+}
+//---------------------------------------------------------------------------
+
+void ver_pinchar_estirar(int nfoto, int cx, int cy,
+                         double radio, double grado,
+                         bool guardar)
+{
+    Mat res = op_pinchar_estirar(foto[nfoto].img, cx, cy, radio, grado);
+
+    if(guardar){
+        res.copyTo(foto[nfoto].img);
+        foto[nfoto].modificada=true;
+    }
+    else {
+        imshow("Pinchar/estirar", res);
+    }
+}
 
 void ver_ajuste_lineal(int nfoto, double pmin, double pmax, bool guardar){
 
