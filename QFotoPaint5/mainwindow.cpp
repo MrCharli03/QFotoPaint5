@@ -524,7 +524,7 @@ void MainWindow::on_actionInformacion_foto_triggered() {
         info += "Profundidad: " + profundidad + "\n";
         info += "Número de canales: " + QString::number(channels) + "\n";
         info += "Memoria ocupada: " + QString::number(memory) + " bytes\n";
-        info += "Color medio (BGR): (" + QString::number(promedioColor[2]) + ", " +
+        info += "Color medio (RGB): (" + QString::number(promedioColor[2]) + ", " +
                                         QString::number(promedioColor[1]) + ", " +
                                         QString::number(promedioColor[0]) + ")\n";
 
@@ -544,15 +544,11 @@ void MainWindow::on_actionAbrir_portapapeles_triggered()
         Mat cvImage;
         if (!image.isNull()) {
                 cvImage = Mat(image.height(), image.width(), CV_8UC4, const_cast<uchar*>(image.constBits()), image.bytesPerLine());
-                cvtColor( cvImage,  cvImage, COLOR_RGBA2BGR);
+                cvtColor( cvImage,  cvImage, COLOR_RGBA2RGB);
         }
 
-        // Continuar con la lógica para manipular la imagen en tu aplicación
-        // Por ejemplo, puedes abrir una ventana de edición con esta imagen
         int pl = comprobar_primera_libre();
         if (pl != -1) {
-            // Usa la matriz cvImage para crear una nueva ventana de edición
-            // o realizar cualquier manipulación que desees en tu aplicación
             crear_nueva(pl, cvImage);
         }
     } else {
